@@ -7,9 +7,13 @@ RUN apk add --no-cache \
     ca-certificates
 
 # download and unzip PocketBase
-ADD https://github.com/pocketbase/pocketbase/releases/download/v0.22.20/pocketbase_0.22.20_linux_amd64.zip /tmp/pb.zip
+ADD https://github.com/pocketbase/pocketbase/releases/download/v${PB_VERSION}/pocketbase_${PB_VERSION}_linux_amd64.zip /tmp/pb.zip
 RUN unzip /tmp/pb.zip -d /pb/
 
 EXPOSE 8080
 
-CMD ["/pb/pocketbase", "serve", "--http=0.0.0.0:8080"]
+# Use an environment variable for CORS origins
+ENV CORS_ORIGINS="*"
+
+# Update the CMD to include CORS configuration
+CMD ["/bin/sh", "-c", "/pb/pocketbase serve --http=0.0.0.0:8080 --origins=${CORS_ORIGINS}"]
